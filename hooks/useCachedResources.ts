@@ -24,7 +24,7 @@ export default function useCachedResources() {
       try {
         SplashScreen.preventAutoHideAsync();
 
-        const imageAssets = await cacheImages([
+        const imageAssets = cacheImages([
           require('../assets/images/IB_logo.png'),
           require('../assets/images/IW_logo.png')
         ]);

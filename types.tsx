@@ -14,7 +14,7 @@ declare global {
 }
 
 export type RootStackParamList = {
-  Root: NavigatorScreenParams<RootTabParamList> | undefined;
+  Home: undefined;
   Modal: undefined;
   NotFound: undefined;
 };
@@ -33,3 +33,16 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> = Composit
   BottomTabScreenProps<RootTabParamList, Screen>,
   NativeStackScreenProps<RootStackParamList>
 >;
+
+export interface ScreenProps {
+  navigation:any 
+}
+
+export interface TaskItem {
+  label:string,
+  count:number
+}
+
+export interface TaskCardItem {
+  item: TaskItem
+}

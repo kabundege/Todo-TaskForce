@@ -5,6 +5,11 @@ import Colors from './Colors'
 // const { width } = Dimensions.get('screen')
 
 export const globalStyles = StyleSheet.create({
+    hr:{
+        width:'100%',
+        borderWidth:1,
+        borderColor:Colors.lightBg
+    },
     btn: {
         padding:20,
         borderRadius,

@@ -5,16 +5,16 @@ import { borderRadius } from '../constants';
 import Colors from '../constants/Colors';
 
 interface TaskCardItem {
-    item: {
-        label:string,
-        count:number
-    }
+  item: {
+    label:string,
+    count:number
+  }
 }
 
 const HeaderCard:React.FC<TaskCardItem> = ({ item }) => {
   return (
     <View style={styles.card}>
-      <Text style={styles.count}>{item.count}</Text>
+      <Text style={styles.count}>{String(item.count).padStart(2,'0')}</Text>
       <Text style={styles.label}>{item.label}</Text>
     </View>
   );
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
         paddingHorizontal:'5%',
         backgroundColor:Colors.baseBg,
         justifyContent:"space-between",
-        marginVertical:"5%",
+        marginVertical:"2.5%",
         marginHorizontal:"5%",
         elevation:5,
     }

@@ -46,3 +46,12 @@ export interface TaskItem {
 export interface TaskCardItem {
   item: TaskItem
 }
+
+export interface TaskSchema {
+  title:string,
+  description:string,
+  priority:'High'|'Medium'|'Low',
+  isCompleted:boolean,
+  createdAt:number,
+  updatedAt:number,
+}

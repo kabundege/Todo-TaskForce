@@ -1,5 +1,5 @@
-import { ActivityIndicator, Dimensions, FlatList, Image, ListRenderItemInfo, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import { ActivityIndicator, Animated, Dimensions, Easing, FlatList, Image, ListRenderItemInfo, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { globalStyles } from '../constants/GlobalStyles';
 import { headerIconSize,borderRadius } from '../constants';
@@ -7,9 +7,10 @@ import { AntDesign, Ionicons } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
 import { StatusBar } from 'expo-status-bar';
 import AddButton from '../components/AddButton';
-import { ScreenProps, TaskItem } from '../types';
+import { ScreenProps, TaskItem, TaskSchema } from '../types';
 import HeaderCard from '../components/HeaderCard';
 import Button from '../components/Button';
+import TaskComponent from '../components/Task';
 
 const initalTasks = [
   {
@@ -27,10 +28,91 @@ const initalTasks = [
   },
 ]
 
+const tasks:TaskSchema[] = [
+  {
+    title:"washing",
+    description:'Tempor ut officia pariatur consectetur sit Lorem nulla irure.',
+    priority:'Low',
+    isCompleted:false,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  },{
+    title:"Jogging",
+    description:'Tempor ut officia pariatur consectetur sit Lorem nulla irure.',
+    priority:'High',
+    isCompleted:true,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  },{
+    title:"Praying",
+    description:'Tempor ut officia pariatur consectetur sit Lorem nulla irure.',
+    priority:'High',
+    isCompleted:false,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  },{
+    title:"Workout",
+    description:'Tempor ut officia pariatur consectetur sit Lorem nulla irure.',
+    priority:'Medium',
+    isCompleted:true,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  },{
+    title:"PlayStation",
+    description:'Tempor ut officia pariatur consectetur sit Lorem nulla irure.',
+    priority:'Medium',
+    isCompleted:false,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  }
+]
 
 const HomeScreen:React.FC<ScreenProps> = ({ navigation }) => {
-  const [ Tasks,setTasks ] = useState([])
+  const [ Tasks,setTasks ] = useState<TaskSchema[]>(tasks)
+  const [ showFilter,setFilter ] = useState<boolean>(false)
   const [ taskStatus,setStatus ] = useState<TaskItem[]>(initalTasks)
+
+  const opacify = useRef(new Animated.Value(0)).current;
+
+  useEffect(()=>{
+    if(Tasks){
+      setStatus(prev=>{
+        
+        const totalTask = Tasks.length;
+        // return 
+        const doneTasks = Tasks.filter(one => one.isCompleted);
+        const activeTasks = Tasks.filter(one => !one.isCompleted);
+        const highPriority = Tasks.filter(one => one.priority === "High")
+
+        return [
+          {...prev[0],count:totalTask},
+          {...prev[1],count:activeTasks.length},
+          {...prev[2],count:doneTasks.length},
+          {...prev[3],count:highPriority.length},
+        ]
+      })
+    }
+  },[Tasks])
+  
+  const fader = (toValue:number) => {
+    const options = {
+      toValue,
+      duration:500,
+      easing: Easing.ease,
+      useNativeDriver:true,
+    }
+    return Animated.timing(opacify,options).start()
+  }
+
+  const toggleComplete = (index:number) => {
+    setTasks(prev => prev.map((task,Taskindex) => {
+      if(Taskindex === index){
+        return { ...task,isCompleted: !task.isCompleted }
+      }else{
+        return task
+      }
+    }))
+  }
 
   const Header = (
     <View style={styles.header}>
@@ -45,8 +127,41 @@ const HomeScreen:React.FC<ScreenProps> = ({ navigation }) => {
           name="filter" 
           color={Colors.invertedText} 
           size={headerIconSize} 
+          onPress={()=>{
+            setFilter(prev=>{
+              fader( !prev ? 1 : 0 )
+              return !prev
+            })
+          }}
           />
       </View>
+      {
+        showFilter &&
+        <Animated.View 
+          style={[styles.filter,{
+            opacity:opacify,
+            transform:[{ 
+              translateY: opacify.interpolate({ 
+                inputRange: [ 0,1 ], 
+                outputRange:[-50,0] 
+              })
+            }]
+          }]} 
+          >
+            <Text style={styles.filterHeader}>filter by priority</Text>
+            <View style={globalStyles.hr} />
+            <View style={globalStyles.spacer} />
+            <TouchableOpacity>
+              <Text style={styles.filterOption}>Low priority</Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+            <Text style={styles.filterOption}>Medium priority</Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+            <Text style={styles.filterOption}>High priority</Text>
+            </TouchableOpacity>
+        </Animated.View>
+      }
     </View>
   )
 
@@ -65,23 +180,40 @@ const HomeScreen:React.FC<ScreenProps> = ({ navigation }) => {
   )
 
   const Body = (
-    <ScrollView style={styles.body}>
+    <View style={styles.body}>
       <Text style={styles.mainText}>Welcome</Text>
-      <FlatList 
-        numColumns={2}
-        data={taskStatus}
-        keyExtractor={(_,index)=>index.toString()}
-        renderItem={({ item }: ListRenderItemInfo<TaskItem>) => <HeaderCard item={item} />} />
-      {
-        Tasks ?
-          Tasks[0] ?
-            <></> : 
-            EmptyTasksView :
-          <View style={styles.loader}>
-            <ActivityIndicator size={30} color={Colors.primary} />
-          </View>
-      }
-    </ScrollView>
+      <View style={globalStyles.flexer}>
+        <HeaderCard item={taskStatus[0]} />
+        <HeaderCard item={taskStatus[1]} />
+      </View>
+      <View style={{flexDirection:'row'}}>
+        <HeaderCard item={taskStatus[2]} />
+        <HeaderCard item={taskStatus[3]} />
+      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {
+          Tasks ?
+            Tasks[0] ?
+              React.Children.toArray(
+                Tasks.map((one,index) => 
+                <>
+                  <TaskComponent 
+                    data={one} 
+                    index={index} 
+                    toggle={toggleComplete} 
+                    navigation={navigation} 
+                    />
+                    <View style={globalStyles.hr} />
+                </>
+                )
+              ) : 
+              EmptyTasksView :
+            <View style={styles.loader}>
+              <ActivityIndicator size={30} color={Colors.primary} />
+            </View>
+        }
+      </ScrollView>
+    </View>
   )
 
   return (
@@ -102,6 +234,33 @@ export default HomeScreen;
 const { width } = Dimensions.get("screen")
 
 const styles = StyleSheet.create({
+  filterOption:{
+    fontSize:15,
+    fontFamily:"Regular",
+    color:Colors.mainText,
+    paddingLeft:'10%',
+    paddingBottom:'10%',
+  },
+  filterHeader:{
+    fontFamily:"Bold",
+    fontSize:15,
+    width:'100%',
+    textAlign:'center',
+    textTransform:"uppercase",
+    paddingVertical:'10%'
+  },
+  filter:{
+    position:'absolute',
+    width:'50%',
+    // height:"50%",
+    backgroundColor:Colors.baseBg,
+    elevation:5,
+    top:'100%',
+    borderRadius,
+    right:0,
+    ...globalStyles.shadow,
+    // shadowOpacity:1
+  },
   emptyNote:{
     fontFamily:"Regular",
     color:Colors.mutedText,
@@ -145,7 +304,9 @@ const styles = StyleSheet.create({
   },
   header:{
     marginVertical:'10%',
-    ...globalStyles.flexer
+    ...globalStyles.flexer,
+    position:'relative',
+    zIndex:2,
   },
   screen:{
     flex:1,

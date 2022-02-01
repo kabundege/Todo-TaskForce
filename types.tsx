@@ -15,7 +15,8 @@ declare global {
 
 export type RootStackParamList = {
   Home: undefined;
-  Modal: undefined;
+  TaskScreen: undefined;
+  NewTaskScreen: undefined;
   NotFound: undefined;
 };
 
@@ -48,10 +49,10 @@ export interface TaskCardItem {
 }
 
 export interface TaskSchema {
-  title:string,
-  description:string,
-  priority:'High'|'Medium'|'Low',
-  isCompleted:boolean,
-  createdAt:number,
-  updatedAt:number,
+  title:string|null,
+  description:string|null,
+  priority:'High'|'Medium'|'Low'|null,
+  isCompleted:boolean|null,
+  createdAt:number|null,
+  updatedAt:number|null,
 }

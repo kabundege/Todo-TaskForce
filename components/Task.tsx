@@ -41,7 +41,7 @@ const TaskComponent:React.FC<Props> = ({ index,data,navigation,toggle }) => {
 
     const ViewTask = () => {
         if(!isCompleted)
-        navigation.navigate('Modal',{ data })
+        navigation.navigate('TaskScreen',{ data })
     }
 
     return (

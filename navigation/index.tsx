@@ -7,7 +7,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import HomeScreen from '../screens/HomeScreen';
-import ModalScreen from '../screens/ModalScreen';
+import TaskScreen from '../screens/TaskScreen';
+import NewTaskScreen from '../screens/NewTaskScreen';
 import { RootStackParamList } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 
@@ -37,7 +38,8 @@ function RootNavigator() {
     <Stack.Navigator screenOptions={{ headerShown }}>
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
+        <Stack.Screen name="TaskScreen" component={TaskScreen} />
+        <Stack.Screen name="NewTaskScreen" component={NewTaskScreen} />
       </Stack.Group>
     </Stack.Navigator>
   );

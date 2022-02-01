@@ -10,7 +10,7 @@ interface Props {
   success?:boolean,
   LeftIcon?: ReactElement,
   RightIcon?: ReactElement,
-  styles: StyleProp<TextStyle> | any,
+  styles?: StyleProp<TextStyle> | any,
   TextStyles?: StyleProp<TextStyle>,
   onPress: (event: GestureResponderEvent) => void
 }

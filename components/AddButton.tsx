@@ -5,8 +5,14 @@ import { headerIconSize } from '../constants';
 import Colors from '../constants/Colors';
 import { globalStyles } from '../constants/GlobalStyles';
 
-const AddButton = ({ navigation }) => {
-    const onPress = () => {}
+interface Props {
+    navigation: any
+}
+
+const AddButton:React.FC<Props> = ({ navigation }) => {
+    const onPress = () => {
+        navigation.navigate("NewTaskScreen")
+    }
     return (
         <TouchableOpacity style={styles.btn} onPress={onPress} >
             <Ionicons name='add' color={Colors.invertedText} size={headerIconSize} />
